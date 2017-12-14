@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <title>实验管理系统</title>
+    <link rel="stylesheet" href="__PUBLIC__/style/layui/css/layui.css">
+    <link rel="stylesheet" href="__PUBLIC__/style/css/bookingBase.css">
+    <link rel="stylesheet" href="__PUBLIC__/style/css/bookingForm.css">
+</head>
+<body>
+<div class="header">
+    <div class="headerWrap clearfix" style="width: 80%;">
+        <span>实验管理系统</span>
+        {if condition="$Request.session.identity eq 'staff'"}
+        <span class="hello">你好，<span>{$Request.session.name}老师</span></span>
+        {else/}
+        <span class="hello">你好，<span>{$Request.session.name}</span></span>
+        {/if}
+        <ul>
+            {if condition="$Request.session.identity neq 'visitor'"}
+            <li><a href="#" class="md-trigger" data-modal="modal-1">重选实验室</a></li>
+            {/if}
+            <li><a href="#">查看课表</a></li>
+            {if condition="$Request.session.identity neq 'visitor'"}
+            <li><a href="#">我的预约</a></li>
+            {/if}
+            <li><a href="{:url('index/logout')}">退出登录</a></li>
+        </ul>
+    </div>
+</div>
+<div class="md-modal md-effect-1" id="modal-1">
+    <div class="md-content">
+        <h3>请选择您要预约的实验室(单选)</h3>
+        <div>
+            <ul class="clearfix">
+                {volist name="exp" id="vo"}
+                    <li class="sel-item">{$vo['lab_name']}（{$vo['lab_area']}）</li>
+                {/volist}
+            </ul>
+        </div>
+        <div class="exp-btn-group clearfix">
+            <a href="#" class="md-sub">确定</a>
+            <button class="md-close">关闭</button>
+        </div>
+    </div>
+</div>
+<div class="contentWrap">
+    <h2>2017—2018学年 第 一 学期  <span style="font-size:inherit;">{$labinfo.lab_name}软件实验室</span>   实验预约表</h2>
+    <div class="infoBar clearfix">
+        <form class="week layui-form" action="#">
+            <span>第 </span>
+                <div class="layui-inline">  
+                    <select name="week_num" lay-verify="">
+                        <option value="">请选择</option>
+                        <option value="1" disabled>1</option>
+                        <option value="2" disabled>2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                </div> 
+            <span> 周</span>
+        </form>
+        <div class="date_site">
+            <span>日期： 9月 11日至  9月  18日 实验地点：{$labinfo.lab_area}</span>
+        </div>
+    </div>
+    <table id="table_t"></table>
+</div>
+<div class="footer">
+    <p class="copy">Copyright © 2017.Dreamtech Studio</p>
+    <a href="#" class="md-trigger md-btn-7" data-modal="modal-7" style="display: none;">规章制度</a>
+</div>
+<div class="md-modal md-effect-7" id="modal-7">
+    <div class="md-content">
+        <h3>该实验室规章制度</h3>
+        <div class="md-content-main">
+            <div>
+                <p>中国航发航材院研究员曹春晓称，将来C919可能要用的长江-1000发动机正在研制之中。</p>
+            　　<p>曹春晓同时还是国家大型飞机重大专项专家咨询委员会委员、材料科学家、钛合金专家。</p>
+            　　<p>曹春晓透露，长江-1000发动机的钛合金用量初步估算是23%。</p>
+            　　<p>据了解，钛合金密度比钢小得多，强度和钢很接近，可以大大减轻飞机及其发动机的重量。</p>
+            　　<p>据中国航空发动机集团官网，1964年，曹春晓与同事共同提出以TC4钛合金叶片和盘研制作为我国航空用钛的突破口。1965年，他率领课题组制成某发动机第一级压气机转子叶片。</p>
+            　　<p>曹春晓称，钛合金是“航空材料大家族”中的“重要成员”，而发动机在航空装备中起着重要作用。“钛在上世纪50年代问世，大大促进了航空发动机的发展。航空发动机（对钛）的需求，强有力地推动了钛的发展。”</p>
+            　　<p>在曹春晓看来，航空发动机是高科技的结晶，是创新型国家的重要标志，也是国家综合国力的集中表现。</p>
+            　　<p>目前，为C919提供动力的是来自CFM国际公司的LEAP-1C发动机，CFM是GE与法国赛峰飞机发动机公司的合资公司。</p>
+                <p>曹春晓同时还是国家大型飞机重大专项专家咨询委员会委员、材料科学家、钛合金专家。</p>
+                <p>曹春晓透露，长江-1000发动机的钛合金用量初步估算是23%。</p>
+                <p>曹春晓同时还是国家大型飞机重大专项专家咨询委员会委员、材料科学家、钛合金专家。</p>
+                <p>曹春晓透露，长江-1000发动机的钛合金用量初步估算是23%。</p>
+                <p>在曹春晓看来，航空发动机是高科技的结晶，是创新型国家的重要标志，也是国家综合国力的集中表现。</p>
+                <p>目前，为C919提供动力的是来自CFM国际公司的LEAP-1C发动机，CFM是GE与法国赛峰飞机发动机公司的合资公司。</p>
+                <p>曹春晓同时还是国家大型飞机重大专项专家咨询委员会委员、材料科学家、钛合金专家。</p>
+            </div>
+        </div>
+        <div class="exp-btn-group clearfix">
+            <button class="md-close" style="width: 100%;">确定</button>
+        </div>
+    </div>
+</div>
+<div class="md-overlay"></div>
+<script src="__PUBLIC__/style/layui/layui.js"></script>
+<script src="__PUBLIC__/style/js/modalEffects.js"></script>
+<script src="__PUBLIC__/style/js/table.js"></script>
+</body>
+</html>
