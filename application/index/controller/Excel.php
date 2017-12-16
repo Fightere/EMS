@@ -3,6 +3,7 @@ namespace app\index\controller;
 use think\Db;
 use PHPExcel_IOFactory;
 use PHPExcel;
+use PHPExcel_Style_Border;
 use app\index\controller\Base;
 
 class Excel extends Base
@@ -12,7 +13,7 @@ class Excel extends Base
 	 * @DateTime:    2017-12-14 21:50:38
 	 * @Description: 合并单元格
 	 */
-	public function mergeExcel($phpsheet,$mergestr){
+	private function mergeExcel($phpsheet,$mergestr){
 		$phpsheet->mergeCells($mergestr);
 	}
 
@@ -21,7 +22,7 @@ class Excel extends Base
 	 * @DateTime:    2017-12-15 16:56:00
 	 * @Description: 设置字体
 	 */
-	public  function setFont($phpsheet,$cell,$n,$size){
+	private function setFont($phpsheet,$cell,$n,$size){
 		for($i=0;$i<$n;$i++){
 			$phpsheet->getStyle($cell[$i])->getFont()->setSize($size[$i]);
 		}
@@ -29,10 +30,39 @@ class Excel extends Base
 
 	/**
 	 * @Author:      fyd
+	 * @DateTime:    2017-12-16 08:19:43
+	 * @Description: 设置单元格边框
+	 */
+	private function setborder($phpsheet,$style,$colorstr,$cellstr,$n){
+		/*$border = array(
+		       'borders' => array (  
+		             'outline' => array (  
+		                   'style' => PHPExcel_Style_Border::BORDER_THIN,   //设置border样式  
+		                   //'style' => PHPExcel_Style_Border::BORDER_THICK,  另一种样式  
+		                   'color' => array ('argb' => 'FF000000'),//设置border颜色  
+		            ),  
+		      ),  
+		); */
+		$border = array(
+			'borders' => array(
+				'outline' => array(
+					'style' => $style,
+					'color' => array('argb' => $colorstr),
+				),
+			),
+		);
+		for($i=0;$i<$n;$i++){
+			$phpsheet->getStyle($cellstr[$i])->applyFromArray($border);
+		}
+		
+	}
+
+	/**
+	 * @Author:      fyd
 	 * @DateTime:    2017-12-14 21:48:16
 	 * @Description: 设置宽度
 	 */
-	public function setWidth($phpsheet,$cell,$n,$width){
+	private function setWidth($phpsheet,$cell,$n,$width){
 		for($i=0;$i<$n;$i++){
 			$phpsheet->getColumnDimension($cell[$i])->setWidth($width[$i]);
 		}
@@ -43,7 +73,7 @@ class Excel extends Base
 	 * @DateTime:    2017-12-15 16:47:43
 	 * @Description: Description
 	 */
-	public function setCenter($phpsheet,$cell,$n){
+	private function setCenter($phpsheet,$cell,$n){
 		for($i=0;$i<$n;$i++){
 			$phpsheet->getStyle($cell[$i])->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 			$phpsheet->getStyle($cell[$i])->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
@@ -55,7 +85,7 @@ class Excel extends Base
 	 * @DateTime:    2017-12-14 21:49:47
 	 * @Description: 设置高度
 	 */
-	public function setHeight($phpsheet,$cell,$n,$height){
+	private function setHeight($phpsheet,$cell,$n,$height){
 		for($i=0;$i<$n;$i++){
 			$phpsheet->getRowDimension($cell[$i])->setRowHeight($height[$i]);
 		}
@@ -83,6 +113,7 @@ class Excel extends Base
        	$this->mergeExcel($PHPSheet,'D4:F4');
        	$this->mergeExcel($PHPSheet,'C12:D12');
        	$this->mergeExcel($PHPSheet,'G12:H12');
+       	$this->mergeExcel($PHPSheet,'B11:H11');
 
        	//设置字体大小
        	$fcell = ['A1'];
@@ -99,6 +130,9 @@ class Excel extends Base
        	$hcell = [6,7,8,9,10,11];
        	$height = [26,26,26,26,26,26];
        	$this->setHeight($PHPSheet,$hcell,6,$height);
+       	//设置边框
+       	$border = ['A5:A11','B5:B11','C5:C11','D5:D11','E5:E11','F5:F11','G5:G11','H5:H11','A5:H5','A6:H6','A7:H7','A8:H8','A9:H9','A10:H10','A11:H11'];
+       	$this->setborder($PHPSheet,PHPExcel_Style_Border::BORDER_THIN,'FF000000',$border,15);
        	//填写数据
        	$PHPSheet->setCellValue('A1','计算机系实验中心计划外实验申请表');
        	$PHPSheet->setCellValue('A3','2017 - 2018学年度 第一学期');
