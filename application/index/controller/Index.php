@@ -27,10 +27,67 @@ class Index extends Base
         $this->assign('exp',$data);
 
         $lab_id = input('Lab_ID');
-        $labinfo = Db::name('lab')->where('id',($lab_id+1))->find();
+        $labinfo = Db::name('lab')->where('id',($lab_id))->find();
         $this->assign('labinfo',$labinfo);
         // echo $getData;
         return $this->fetch('table');
+    }
+
+    /**
+     * @Author:      fyd
+     * @DateTime:    2018-02-20 11:59:40
+     * @Description: 跳转到输入课程信息界面，并传输数据
+     */
+    public function form(){
+        $data = Db::name('lab')->select();
+        $type = Db::name('type')->select();
+        $jys = Db::name('jys')->select();
+        $this->assign('jys',$jys);
+        $this->assign('type',$type);
+        $this->assign('exp',$data);
+        $lab_id = input('Lab_ID');
+        $labinfo = Db::name('lab')->where('id',($lab_id+1))->find();
+        $this->assign('labinfo',$labinfo);
+        // 得到点击的位置的信息
+        $gets = input('get.');
+        $this->assign('gets',$gets);
+        dump($gets);
+        return $this->fetch('form');
+    }
+
+    /**
+     * @Author:      fyd
+     * @DateTime:    2018-02-20 18:01:07
+     * @Description: 修改用户密码
+     */
+    public function ex_pass(){
+        $username = session('username');
+        $identity = session('identity');
+        $info = Db::name($identity)->where('username',$username)->find();
+        $password = $info['password'];
+
+        if(request() -> isPost()){
+            $ex_data = input('post.');
+            dump(ex_data);
+            $ex_password = $ex_data['ex_password'];
+            if($password == $ex_password){
+                echo "您输入的密码与原密码相同！";
+            }else{
+                $result = Db::name($identity)
+                    ->where('username',$username)
+                    ->update([
+                        'password' => $password,
+                    ]);
+                // dump($result);
+                // 提示修改成功
+                if($result){
+                    echo "修改成功";
+                }else{
+                    echo "修改失败";
+                }
+            }
+        }
+        // dump($info);
     }
 
     /**
