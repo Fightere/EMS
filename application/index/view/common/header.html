@@ -4,23 +4,36 @@
     <!-- 头部区域-->
     <ul class="layui-nav layui-layout-left">
         <li class="layui-nav-item">
-            <a href="index">首页</a>
+            <a href="{:url('Index/index')}">首页</a>
         </li>
-        {if condition="$Request.session.identity neq 'visitor'"}
+        {if condition="$Request.session.ems_identity neq 'visitor'"}
         <li class="layui-nav-item">
             <a href="javascript:;">选择实验室</a>
             <dl class="layui-nav-child">
                 {volist name="exp" id="vo"}
-                <dd><a href="table.html?Lab_ID={$vo['id']}">{$vo['lab_name']}</a></dd>
+                <dd><a href="{:url('Index/table')}?Lab_ID={$vo['id']}">{$vo['lab_name']}</a></dd>
                 {/volist}
             </dl>
         </li>
+        {/if}
         <li class="layui-nav-item">
-            <a href="">查看课表</a>
+            <a href="{:url('Display/index')}">查看课表</a>
         </li>
-        {if condition="$Request.session.identity neq 'visitor'"}
+        {if condition="$Request.session.ems_identity neq 'visitor'"}
         <li class="layui-nav-item">
             <a href="{:url('Register/index')}">我的预约</a>
+        </li>
+        {/if}
+
+        {if condition="$Request.session.ems_identity eq 'admin'"}
+        <li class="layui-nav-item">
+            <a href="{:url('User/lst')}">用户管理</a>
+        </li>
+        {/if}
+
+        {if condition="$Request.session.ems_identity eq 'admin'"}
+        <li class="layui-nav-item">
+            <a href="{:url('Lab/lst')}">实验室管理</a>
         </li>
         {/if}
     </ul>
@@ -28,8 +41,8 @@
         <li class="layui-nav-item">
             <a href="javascript:;">我的信息</a>
             <dl class="layui-nav-child">
-                {if condition="$Request.session.identity neq 'visitor'"}
-                <dd><a href="{:url('Index/ex_pass')}">修改密码</a></dd>
+                {if condition="$Request.session.ems_identity neq 'visitor'"}
+                <dd><a href="javascript:" id="password-btn">修改密码</a></dd>
                 {/if}
                 <dd><a href="{:url('Index/logout')}">注销</a></dd>
             </dl>

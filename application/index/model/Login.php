@@ -11,15 +11,23 @@ class Login extends Model
      * @Description: 根据用户的输入判断
      */
     public function login($data,$table){//教职工登录
-        $user = Db::name($table) -> where('username','=',$data['username']) -> find();
+        // $user = Db::name($table) -> where('username','=',$data['username']) -> find();
+        $user = Db::name($table) 
+                -> where([
+                    'username'  => $data['username'],
+                    'isdelete'  => 0,
+                ])
+                ->find();
         if($user){
             //补充：密码的加密
-            if($user['password'] == $data['password']){
+            if($user['password'] == md5($data['password'])){
                 session(null);
-                session('id',$user['id']);
-                session('name',$user['name']);
-                session('username',$user['username']);
-                session('identity',$data['identity']);
+                session('ems_id',$user['id']);
+                session('ems_name',$user['name']);
+                session('ems_username',$user['username']);
+                session('ems_identity',$data['identity']);
+                $str = date("Y-m-d H:i",time());
+                $res = Db::name($table)->where('username',$data['username'])->update(['lasttime'=>$str]);
                 //dump($_SESSION);
                 return 1;//信息正确
             }else{
@@ -36,7 +44,7 @@ class Login extends Model
      */
     public function see(){//以游客身份登陆
         session(null);
-        session('name','游客');
-        session('identity','visitor');
+        session('ems_name','游客');
+        session('ems_identity','visitor');
     }
 }

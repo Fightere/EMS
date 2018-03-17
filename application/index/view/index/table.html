@@ -21,7 +21,7 @@
                 <form class="week layui-form" action="#" style="float:left;">
                     <span>第 </span>
                     <div class="layui-inline" style="width: 100px;">
-                        <select name="week" lay-verify="week">
+                        <select name="week-select" lay-verify="week" class="week-select">
                             <option value="">请选择</option>
                             <option value="1" disabled>1</option>
                             <option value="2" disabled>2</option>
@@ -53,84 +53,22 @@
                     <span> 周</span>
                 </form>
                 <div style="float: right;line-height: 38px;">
-                    <p>日期： 9月 11日至  9月  18日 实验地点：{$labinfo.lab_area}</p>
+                    <p>日期： <span id="week-date">9月 11日至 9月 18日</span> 实验地点：{$labinfo.lab_area}</p>
                 </div>
             </div>
-            <table id="table" class="layui-table">
-                <colgroup>
-                    <col width="162">
-                    <col width="162">
-                    <col width="162">
-                    <col width="162">
-                    <col width="162">
-                    <col width="162">
-                    <col width="162">
-                    <col>
-                </colgroup>
-                <thead>
-                <tr>
-                    <th>课时</th>
-                    <th>周一</th>
-                    <th>周二</th>
-                    <th>周三</th>
-                    <th>周四</th>
-                    <th>周五</th>
-                    <th>周六</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>第一大节</td>
-                    <td data-reservation="false" title="实验课程名称：计算机组成原理<br>专业班级：计科1501班、计科1502班、计科1503班<br>人数：86<br>指导教师：程晓荣<br>可用设备数：0<br>总实验设备数：90"></td>
-                    <td title="实验课程名称：计算机组成原理<br>专业班级：计科1501班<br>人数：30<br>指导教师：程晓荣<br>可用设备数：60<br>总实验设备数：90"></td>
-                    <td title=""></td>
-                    <td title=""></td>
-                    <td title=""></td>
-                    <td title=""></td>
-                </tr>
-                <tr>
-                    <td>第二大节</td>
-                    <td title=""></td>
-                    <td data-reservation="false" title="实验课程名称：计算机组成原理<br>专业班级：计科1501班、计科1502班、计科1503班<br>人数：86<br>指导教师：程晓荣<br>可用设备数：0<br>总实验设备数：90"></td>
-                    <td title=""></td>
-                    <td title=""></td>
-                    <td title=""></td>
-                    <td data-reservation="false" title="实验课程名称：计算机组成原理<br>专业班级：计科1501班、计科1502班、计科1503班<br>人数：86<br>指导教师：程晓荣<br>可用设备数：0<br>总实验设备数：90"></td>
-                </tr>
-                <tr>
-                    <td>第三大节</td>
-                    <td title=""></td>
-                    <td title=""></td>
-                    <td title=""></td>
-                    <td title=""></td>
-                    <td data-reservation="false" title="实验课程名称：计算机组成原理<br>专业班级：计科1501班、计科1502班、计科1503班<br>人数：86<br>指导教师：程晓荣<br>可用设备数：0<br>总实验设备数：90"></td>
-                    <td title=""></td>
-                </tr>
-                <tr>
-                    <td>第四大节</td>
-                    <td title=""></td>
-                    <td title=""></td>
-                    <td title=""></td>
-                    <td data-reservation="false" title="实验课程名称：计算机组成原理<br>专业班级：计科1501班、计科1502班、计科1503班<br>人数：86<br>指导教师：程晓荣<br>可用设备数：0<br>总实验设备数：90"></td>
-                    <td title=""></td>
-                    <td title=""></td>
-                </tr>
-                <tr>
-                    <td>第五大节</td>
-                    <td data-reservation="false" title="实验课程名称：计算机组成原理<br>专业班级：计科1501班、计科1502班、计科1503班<br>人数：86<br>指导教师：程晓荣<br>可用设备数：0<br>总实验设备数：90"></td>
-                    <td title="实验课程名称：计算机组成原理<br>专业班级：计科1501班<br>人数：30<br>指导教师：程晓荣<br>可用设备数：60<br>总实验设备数：90"></td>
-                    <td title=""></td>
-                    <td title=""></td>
-                    <td title=""></td>
-                    <td title=""></td>
-                </tr>
-                </tbody>
-            </table>
+            <style>
+                .layui-table td{
+                    height: 70px;
+                }
+            </style>
+            <table id="reservation" lay-filter="reservation"></table>
         </div>
     </div>
     {include file="common/footer" /}
 </div>
+
 <script src="__PUBLIC__/style/layui/layui.js"></script>
+<script src="__PUBLIC__/style/js/base.js"></script>
 <script src="__PUBLIC__/style/js/table.js"></script>
 </body>
 </html>

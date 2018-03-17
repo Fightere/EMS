@@ -23,14 +23,6 @@
             <div class="layui-row">
                 <div class="layui-col-lg3 layui-col-md4 layui-col-sm6">
                     <div class="layui-form-item">
-                        <label class="layui-form-label">学期</label>
-                        <div class="layui-input-block">
-                            <input type="text" name="term" required  lay-verify="required" placeholder="请输入学期" autocomplete="off" class="layui-input">
-                        </div>
-                    </div>
-                </div>
-                <div class="layui-col-lg3 layui-col-md4 layui-col-sm6">
-                    <div class="layui-form-item">
                         <label class="layui-form-label">课程名称</label>
                         <div class="layui-input-block">
                             <input type="text" name="class_name" required  lay-verify="required" placeholder="请输入课程名称" autocomplete="off" class="layui-input">
@@ -124,11 +116,13 @@
     {include file="common/footer" /}
 </div>
 <script src="__PUBLIC__/style/layui/layui.js"></script>
+
 <script>
     layui.use(['element','form'], function() {
         var element = layui.element,
             form = layui.form;
     })
 </script>
+<script src="__PUBLIC__/style/js/base.js"></script>
 </body>
 </html>
