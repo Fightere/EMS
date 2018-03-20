@@ -36,11 +36,21 @@ class User extends Base
      * @Description: 产生json数据
      */
     public function show(){
-        $list = Db::name('user') -> where('isdelete',0) -> select();
+        $page = input('page');
+        $limit = input('limit');
 
-        $count = count($list);
+        $count = Db::name('user')
+        -> where('isdelete',0)
+        -> count();
 
-        for($i=1;$i<=$count;$i++){
+        $list = Db::name('user') 
+        -> where('isdelete',0) 
+        -> limit(($page-1)*$limit,$limit)
+        -> select();
+
+        $counts = count($list);
+
+        for($i=1;$i<=$counts;$i++){
             $list[$i-1]['kid'] = $i;
         }
 

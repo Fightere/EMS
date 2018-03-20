@@ -3,27 +3,8 @@ namespace app\index\controller;
 use think\Db;
 use app\index\controller\Base;
 
-class Register extends Base
+class Reservations extends Base
 {
-
-	/**
-	 * @Author:      fyd
-	 * @DateTime:    2018-02-22 08:31:39
-	 * @Description: 判断申请书是否通过了申请
-	 */
-	private function is_allow($apply,$isallow){
-		if($apply == 1){
-			echo "已经递交了申请书<br>";
-			if($isallow == 1){
-				echo "已经通过了申请<br>";
-			}else{
-				echo "还未通过申请！<br>";
-			}
-		}else{
-			echo "还未递交申请书<br>";
-		}
-	}
-
 
 	/**
 	 * @Author:      fyd
@@ -31,41 +12,93 @@ class Register extends Base
 	 * @Description: 获得本人的预约
 	 */
 	public function index(){
+		return $this->fetch('reservations');
+	}
+
+	/**
+	 * @Author:      fyd
+	 * @DateTime:    2018-03-18 18:16:36
+	 * @Description: 获取预约数据
+	 */
+	public function getdata(){
+		$page = input('page');
+        $limit = input('limit');
+
+        $count = Db::name('exper')
+        -> count();
+
 		$user = session('ems_name');
 		$data = Db::name('exper')
 				->where('exp_user',$user)
+				-> limit(($page-1)*$limit,$limit)
 				->select();
+		$counts = count($data);
 
-		$count = count($data);
-
-		for ($i=0; $i<$count; $i++) { 
-			$apply = $data[$i]['exp_apply']; //是否递交申请书
-			$isallow = $data[$i]['exp_isallow']; //是否通过了申请
-			$this->is_allow($apply,$isallow);
+		for($i=1;$i<=$counts;$i++){
+            $data[$i-1]['kid'] = $i;
+        }
+		$datas = [];
+		for ($i=0; $i<$counts; $i++) { 
+			$datas[$i]['id'] = $data[$i]['id'];
+			$datas[$i]['exp_zdt'] = $data[$i]['exp_zdt'];
+			$datas[$i]['lab_name'] = $data[$i]['exp_name'];
+			$datas[$i]['ifsubmit'] = ($data[$i]['exp_apply'] == 1)? true:false; 
+			$datas[$i]['ifpass'] = ($data[$i]['exp_isallow'] == 1)? true:false; 
+			$datas[$i]['sub_time'] = $data[$i]['exp_time'];
 		}
+		echo json(['code'=>0,'count'=>$count,'msg'=>'','data'=>$datas])->getcontent();
+	}
 
+	/**
+	 * @Author:      fyd
+	 * @DateTime:    2018-03-18 18:37:42
+	 * @Description: 私有函数
+	 */
+	private function ex($name,$id){
+		$data = Db::name('exper')
+				-> where('id',$id)
+				-> find();
+		if($data){
+			$sub = $data[$name];
+			
+			$res = Db::name('exper')
+				-> where('id',$id)
+				-> update([$name=>!$sub]);
 
-		/*$apply = $data['exp_sec']; //是否递交申请书
-		$isallow = $data['exp_isallow']; //是否通过了申请
-
-		if($apply == 1){
-			echo "已经递交了申请书";
-			if($isallow == 1){
-				echo "<br>";
-				echo "已经通过了申请";
-
-				// 把已经通过申请的内容添加到ems_class表中
+			if($res){
+				echo json(['code'=>0])->getcontent();
 			}else{
-				echo "还未通过申请！";
+				echo json(['code'=>1])->getcontent();
 			}
 		}else{
-			echo "还未递交申请书";
-		}*/
-
-		dump($data);
-		dump(count($data));
-		$this->fetch('register');
+			echo json(['code'=>1])->getcontent();
+		}
+		
 	}
+
+	/**
+	 * @Author:      fyd
+	 * @DateTime:    2018-03-18 18:36:57
+	 * @Description: 是否提交申请书
+	 */
+	public function exsub(){
+		$id = input('id');
+		$this->ex('exp_apply',$id);
+	}
+
+	/**
+	 * @Author:      fyd
+	 * @DateTime:    2018-03-18 18:36:57
+	 * @Description: 是否通过申请
+	 */
+	public function exall(){
+		$id = input('id');
+		$this->ex('exp_isallow',$id);
+	}
+
+
+
+
 
 	/**
 	 * @Author:      fyd

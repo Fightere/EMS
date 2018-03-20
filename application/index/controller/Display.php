@@ -64,36 +64,42 @@ class Display extends Base
 	 * @Description: 展示当前周数
 	 */
 	public function index(){
-		// 获取当前周数 $dweek  | 根据实验室显示课表
 		//当前是哪一天
 		$now = date("Y-m-d",time());
 		$info = $this->getinfo($now);
+		$lab_id = input('ids'); 
 
-		// $dweek = $info['termweek'];
+		$labid = Db::name('equip') 
+		-> where('elab_id',$lab_id) 
+		-> field('id')
+		-> find();
+
+		if(input('weeks')){
+			$dweek = input('weeks');
+		}else{
+			$dweek = $info['termweek']; //获取当前周数
+		}
+
+		$data = [];
 
 		if(isset($dweek)){
 			$data = Db::name('exper')
 					->where('exp_date',$dweek)
+					->where('equip_id','in',$labid)
 					->select();
 		}else{
 			$data = Db::name('exper')
 					->where('exp_date',18)
+					->where('equip_id','in',$labid)
 					->select();
 		}
+
+		// $data = Db::name('exper')
+		// 				->where('exp_date',18)
+		// 				->select();
 		$count = count($data);
 
 		$arr = [];
-
-		/*for($js=0;$js<5;$js++){
-			$jsondata[$js] = [
-				"mon"=>[[]],
-				"tues"=>[[]],
-				"wed"=>[[]],
-				"thur"=>[[]],
-				"fri"=>[[]],
-				"sat"=>[[]]
-			];
-		}*/
 
 		for($js=0;$js<5;$js++){
 			$arr[$js] = [
@@ -151,10 +157,10 @@ class Display extends Base
 			$arr[$row][$col][0] = $jdata[$j];
 		}
 
-		$jc = array(
+		/*$jc = array(
 			'第一大节','第二大节','第三大节','第四大节','第五大节'
 		);
-
+*/
 		$jsondata = [];
 
 		for($js=0;$js<5;$js++){
@@ -168,18 +174,6 @@ class Display extends Base
 			];
 		}
 
-		
-
-		/*dump($info);
-		dump($formdata);
-		dump($num);
-		dump($data);
-		dump($arr[0]);*/
-
-		$this->assign('data',$data);
-		$this->assign('jc',$jc);
-		$this->assign('num',$num);
-		$this->assign('formdata',$formdata);
-		echo json(['code'=>0,'fday'=>$info['fday'],'termweek'=>$info['termweek'],'msg'=>'','data'=>$jsondata])->getcontent();
+		echo json(['code'=>0,'fday'=>$info['fday'],'termweek'=>$dweek,'msg'=>'','data'=>$jsondata])->getcontent();
 	}
 }

@@ -16,12 +16,9 @@
             </dl>
         </li>
         {/if}
-        <li class="layui-nav-item">
-            <a href="{:url('Display/index')}">查看课表</a>
-        </li>
         {if condition="$Request.session.ems_identity neq 'visitor'"}
         <li class="layui-nav-item">
-            <a href="{:url('Register/index')}">我的预约</a>
+            <a href="{:url('Reservations/index')}">我的预约</a>
         </li>
         {/if}
 
@@ -36,6 +33,9 @@
             <a href="{:url('Lab/lst')}">实验室管理</a>
         </li>
         {/if}
+        <li class="layui-nav-item">
+            <a href="{:url('Term/index')}">设置</a>
+        </li>
     </ul>
     <ul class="layui-nav layui-layout-right">
         <li class="layui-nav-item">

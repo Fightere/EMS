@@ -83,18 +83,105 @@ class Lab extends Base
 	/**
 	 * @Author:      fyd
 	 * @DateTime:    2018-03-13 16:44:42
-	 * @Description: 添加设备
+	 * @Description: 设备页面
+	 */
+	public function showequip(){
+		// dump(input('get.'));
+		$id = input('ids');
+		$page = input('page');
+        $limit = input('limit');
+
+        $count = Db::name('equip')
+        -> where('elab_id',$id)
+        -> where('isdelete',0)
+        -> count();
+
+        $list = Db::name('equip')
+        -> where('elab_id',$id)
+        -> where('isdelete',0)
+        -> limit(($page-1)*$limit,$limit)
+        -> select();
+
+        $counts = count($list);
+
+        for($i=1;$i<=$counts;$i++){
+            $list[$i-1]['kid'] = $i;
+        }
+
+        if($count){
+            echo json(['code'=>0,'count'=>$count,'msg'=>'','data'=>$list])->getcontent();
+        }else{
+            echo json(['code'=>1,'count'=>$count,'msg'=>'','data'=>$list])->getcontent();
+        }
+	}
+
+	/**
+	 * @Author:      fyd
+	 * @DateTime:    2018-03-19 20:11:11
+	 * @Description: 获取设备列表
+	 */
+	public function lstequip(){
+		$id = input('ids');
+		$this -> assign('id',$id);
+		return $this -> fetch('equips');
+	}
+
+	/**
+	 * @Author:      fyd
+	 * @DateTime:    2018-03-19 20:11:46
+	 * @Description: 添加设备(未完)
 	 */
 	public function addequip(){
-		$id = input('id');
-		$type = input('equip_type');
+		$id = input('idss');
+		$type = input('equip_name');
 		$num = input('equip_num');
 
-		$res = Db::name('equip') -> insert([
-				'equip_name' 	=> $type,
-				'equip_num'		=> $num,
-				'elab_id'		=> $id,
-			]);
+		$res = Db::name('equip')
+				-> insert([
+						'equip_name'	=>	$type,
+						'equip_num'		=>	$num,
+						'elab_id'		=>	$id
+					]);
+
+		if($res){
+			echo json(['code'=>0])->getcontent();
+		}else{
+			echo json(['code'=>1])->getcontent();
+		}
+	}
+
+	/**
+	 * @Author:      fyd
+	 * @DateTime:    2018-03-19 20:35:17
+	 * @Description: 修改设备
+	 */
+	public function editequip(){
+		$id = input('id');
+		$type = input('equip_name');
+		$num = input('equip_num');
+
+		$res = Db::name('equip')
+				-> where('id',$id)
+				-> update(['equip_name'=>$type,'equip_num'=>$num]);
+
+		if($res){
+			echo json(['code'=>0])->getcontent();
+		}else{
+			echo json(['code'=>1])->getcontent();
+		}
+	}
+
+	/**
+	 * @Author:      fyd
+	 * @DateTime:    2018-03-19 20:27:06
+	 * @Description: 删除设备
+	 */
+	public function delequip(){
+		$id = input('id');
+
+		$res = Db::name('equip')
+				-> where('id',$id)
+				-> update(['isdelete'=>1]);
 
 		if($res){
 			echo json(['code'=>0])->getcontent();
@@ -109,11 +196,22 @@ class Lab extends Base
 	 * @Description: 产生json数据
 	 */
 	public function show(){
-        $list = Db::name('lab') -> where('isdelete',0) -> select();
 
-        $count = count($list);
+		$page = input('page');
+        $limit = input('limit');
 
-        for($i=1;$i<=$count;$i++){
+        $count = Db::name('lab')
+        -> where('isdelete',0)
+        -> count();
+
+        $list = Db::name('lab') 
+        -> where('isdelete',0) 
+        -> limit(($page-1)*$limit,$limit)
+        -> select();
+
+        $counts = count($list);
+
+        for($i=1;$i<=$counts;$i++){
             $list[$i-1]['kid'] = $i;
         }
 

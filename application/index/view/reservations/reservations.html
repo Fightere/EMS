@@ -16,17 +16,13 @@
     <div class="layui-body">
         <div class="layui-container">
             <!-- 内容主体区域 -->
-            <h2>实验室管理</h2>
-            <div class="btn-wrap layui-clear">
-                <div class="layui-show-md-inline-block" style="float:right;">
-                    <a href="{:url('Lab/addinfo')}" class="layui-btn">新建实验室</a>
-                </div>
-            </div>
-            <table id="labs" lay-filter="labs"></table>
-            <script type="text/html" id="operation-bar">
-                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-                <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
-                <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="add">查看设备</a>
+            <h2>预约管理</h2>
+            <table id="reservations" lay-filter="reservations"></table>
+            <script type="text/html" id="switch-submit">
+                <input type="checkbox" name="ifsubmit" value="{{d.id}}" lay-skin="switch" lay-text="是|否" lay-filter="ifsubmit" {{ d.ifsubmit == true ? 'checked' : '' }}>
+            </script>
+            <script type="text/html" id="switch-pass">
+                <input type="checkbox" name="ifpass" value="{{d.id}}" lay-skin="switch" lay-text="是|否" lay-filter="ifpass" {{ d.ifpass == true ? 'checked' : '' }}>
             </script>
         </div>
     </div>
@@ -34,6 +30,6 @@
 </div>
 <script src="__PUBLIC__/style/layui/layui.js"></script>
 <script src="__PUBLIC__/style/js/base.js"></script>
-<script src="__PUBLIC__/style/js/labs.js"></script>
+<script src="__PUBLIC__/style/js/reservations.js"></script>
 </body>
 </html>

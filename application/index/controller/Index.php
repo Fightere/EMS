@@ -39,7 +39,6 @@ class Index extends Base
      * @Description: 跳转到输入课程信息界面，并传输数据
      */
     public function form(){
-        // $data = Db::name('lab')->select();
         $type = Db::name('type')->select();
         $jys = Db::name('jys')->select();
         $this->assign('jys',$jys);
@@ -51,9 +50,7 @@ class Index extends Base
         // 得到点击的位置的信息
         $gets = input('get.');
         $this->assign('gets',$gets);
-
         // dump($gets);
-        //dump($gets);
         return $this->fetch('form');
     }
 
