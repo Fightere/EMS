@@ -20,6 +20,19 @@ class Base extends Controller
      */
     public function _initialize(){ 
         if(!session('ems_identity')){
+            // echo '
+            //     <script src="'.SITE_URL.'/public/static/index/style/layui/layui.js"></script>
+            //     <script>
+            //         layui.use(["layer"], function () {
+            //             var layer = layui.layer;
+            //             layer.msg("请先登录系统",{icon:"6",time:1});
+            //             setTimeout(function(){
+            //                 self.parent.location.href="'.SITE_URL.'/public/index/Login/index";
+            //             },0);
+            //         });
+            //     </script>
+            // ';
+            // $this->redirect('Login/index');
             $this->error("请先登录系统！",'Login/index');
         }else{
             $exp_datas = Db::name('lab')->where('isdelete',0)->select();

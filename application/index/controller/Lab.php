@@ -243,6 +243,10 @@ class Lab extends Base
 	public function del(){
 		$id = input('id');
 		$res = Db::name('lab') -> where('id',$id) -> update(['isdelete'=>1]);
+		$res1 = Db::name('equip') -> where(['elab_id'=>$id,'isdelete'=>0]) -> select();
+		if($res1){
+			$res2 = Db::name('equip') -> where('elab_id',$id) -> update(['isdelete'=>1]);
+		}
 
 		if($res){
             echo json(['code'=>0])->getcontent();

@@ -51,7 +51,7 @@ class Login extends Controller
     public function visitor(){
         $login = new LoginModel();
         $login -> see();
-        $this->redirect('index/index');
+        $this->redirect('Index/index');
         // $this->success('恭喜你以游客身份登录成功！','index/index');
     }
 

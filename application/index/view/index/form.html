@@ -16,16 +16,25 @@
     <div class="layui-body">
         <!-- 内容主体区域 -->
         <h2>请填写您的预约信息</h2>
-        <form class="layui-form layui-container" action="{:url('Register/add')}" method="post">
+        <form class="layui-form layui-container" action="#" method="post">
             <input type="hidden" name="Lab_ID" value="{$gets.Lab_ID}">
             <input type="hidden" name="day" value="{$gets.day}">
             <input type="hidden" name="period" value="{$gets.period}">
+            <input type="hidden" name="week" value="{$gets.week}">
             <div class="layui-row">
                 <div class="layui-col-lg3 layui-col-md4 layui-col-sm6">
                     <div class="layui-form-item">
                         <label class="layui-form-label">课程名称</label>
                         <div class="layui-input-block">
                             <input type="text" name="class_name" required  lay-verify="required" placeholder="请输入课程名称" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-lg3 layui-col-md4 layui-col-sm6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">指导老师</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="teacher" required  lay-verify="required" placeholder="请输入指导老师" autocomplete="off" class="layui-input">
                         </div>
                     </div>
                 </div>
@@ -42,6 +51,21 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="layui-col-lg3 layui-col-md4 layui-col-sm6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">设备类型</label>
+                        <div class="layui-input-block">
+                            <select name="equip_name" lay-verify="required">
+                                <option value="0"></option>
+                                {volist name="equip" id="vo_equip"}
+                                <option value="{$vo_equip['id']}">{$vo_equip['equip_name']}（{$vo_equip['equip_num']}）</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="layui-col-lg3 layui-col-md4 layui-col-sm6">
                     <div class="layui-form-item">
                         <label class="layui-form-label">实验学时</label>
@@ -124,5 +148,6 @@
     })
 </script>
 <script src="__PUBLIC__/style/js/base.js"></script>
+<script src="__PUBLIC__/style/js/form.js"></script>
 </body>
 </html>

@@ -18,24 +18,28 @@
         {/if}
         {if condition="$Request.session.ems_identity neq 'visitor'"}
         <li class="layui-nav-item">
-            <a href="{:url('Reservations/index')}">我的预约</a>
+            <a href="{:url('Reservations/index_user')}">我的预约</a>
         </li>
         {/if}
 
         {if condition="$Request.session.ems_identity eq 'admin'"}
+        <li class="layui-nav-item">
+            <a href="{:url('Reservations/index')}">管理预约</a>
+        </li>
+
         <li class="layui-nav-item">
             <a href="{:url('User/lst')}">用户管理</a>
         </li>
-        {/if}
 
-        {if condition="$Request.session.ems_identity eq 'admin'"}
         <li class="layui-nav-item">
             <a href="{:url('Lab/lst')}">实验室管理</a>
         </li>
-        {/if}
+
         <li class="layui-nav-item">
             <a href="{:url('Term/index')}">设置</a>
         </li>
+        {/if}
+        
     </ul>
     <ul class="layui-nav layui-layout-right">
         <li class="layui-nav-item">

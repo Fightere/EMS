@@ -5,57 +5,43 @@ use app\index\controller\Base;
 
 class Display extends Base
 {
-
 	/**
 	 * @Author:      name
 	 * @DateTime:    2018-03-10 10:51:10
 	 * @Description: 获取当前学期和周数
 	 */
 	private function getinfo($now){
-		// 这里应当是通过表单输入然后把这个信息存储起来
-		// 学期
-		$xq = '2017 - 2018 - 2';
-		// 新学期第一天
-		$fday = "2018-03-05";
+		$dateinfo = Db::name('set')
+					-> where('setname','fday')
+					-> find();
+		$fday = $dateinfo['setvalue'];
+		$farr = explode('-', $fday);
+		$fyear = $farr[0];
+		$fmonth = $farr[1];
+		//学期
+		if($fmonth > '09'){
+			$xq = $fyear.' - '.($fear+1).' -  2';
+		}else{
+			$xq = ($fyear-1).' - '.$fyear.' -  1';
+		}
 		//转化成时间戳
 		$fday_str = strtotime($fday);
 		$now_str = strtotime($now);
-
 		//获取当前是第几周
 		$diff = ($now_str - $fday_str) / 86400;
 		$termweek = $diff / 7 + 1;
-
 		$ndate = getdate($now_str);
-
 		$wday = $ndate['wday'];
-
 		if($wday == 0){
 			$wday = 7;
 		}
-
-
 		$info = [
 				'xq'		=>	$xq,
 				'fday'		=>	$fday,
 				'termweek'	=>	(int)$termweek,
 				'wday'		=>	$wday,
 			];
-
 		return $info;
-	}
-
-	/**
-	 * @Author:      fyd
-	 * @DateTime:    2018-03-10 11:10:24
-	 * @Description: 除去节假日
-	 */
-	private function isholiday(){
-		$now = date("Y-m-d",time());
-		$holiday = [
-			'2018-04-05',
-			'2018-05-01',
-			'2018-06-18',
-			];
 	}
 
 	/**
@@ -84,56 +70,52 @@ class Display extends Base
 
 		if(isset($dweek)){
 			$data = Db::name('exper')
+					->field('sum(exp_snum/exp_pnum),sum(exp_snum),exp_snum,exp_name,exp_class,exp_zdt,exp_sec,exp_week')
 					->where('exp_date',$dweek)
-					->where('equip_id','in',$labid)
+					->where('elab_id',$lab_id)
+					// ->where('equip_id','in',$labid)
+					->where(['exp_apply'=>1,'exp_isallow'=>1])
+					->group('exp_date,exp_week,exp_sec')
 					->select();
 		}else{
 			$data = Db::name('exper')
+					->field('sum(exp_snum/exp_pnum),sum(exp_snum),exp_snum,exp_name,exp_class,exp_zdt,exp_sec,exp_week')
 					->where('exp_date',18)
-					->where('equip_id','in',$labid)
+					->where('elab_id',$lab_id)
+					// ->where('equip_id','in',$labid)
+					->where(['exp_apply'=>1,'exp_isallow'=>1])
+					->group('exp_date,exp_week,exp_sec')
 					->select();
 		}
-
-		// $data = Db::name('exper')
-		// 				->where('exp_date',18)
-		// 				->select();
+		// dump($data2);
 		$count = count($data);
-
 		$arr = [];
-
 		for($js=0;$js<5;$js++){
-			$arr[$js] = [
-				[[]],
-				[[]],
-				[[]],
-				[[]],
-				[[]],
-				[[]]
+			$arr[$js] = [ [[]], [[]], [[]], [[]], [[]], [[]]
 			];
 		}
-
 		// 对于$data的处理 获取到对应实验的实验设备数目 并且进行对比 然后把数据添加过去
 		for($n=0;$n<$count;$n++){
 			$oper_data = $data[$n];
-			$equipid = $oper_data['equip_id'];
-			$edata = Db::name('equip')->where('id',$equipid)->find();
-			$equipnum = $edata['equip_num']; // 实验室中存在的实验设备数目
-			$applynum = $oper_data['exp_snum']/$oper_data['exp_pnum'];// 申请的数目
-
+			// $equipid = $oper_data['equip_id'];
+			// $edata = Db::name('equip')->where('id',$equipid)->find();
+			$edata = Db::name('lab')->where('id',$lab_id)->find();
+			$equipnum = $edata['lab_enum']; //实验室中存在的实验设备数目
+			$applynum = (int)$oper_data['sum(exp_snum/exp_pnum)'];// 申请的数目
 			$remain = $equipnum - $applynum;
+			$data[$n]['exp_snum'] = $oper_data['sum(exp_snum)'];
 			$data[$n]['equip_num'] = $equipnum;
 			$data[$n]['remain_num'] = $remain;
-
-			if($remain>0){
-				$data[$n]['remain_state'] = True;
-			}else{
-				$data[$n]['remain_state'] = False;
-			}
 		}
+
+		$holiday = Db::name('holiday')->where('exp_date',$dweek)->select();
+		$data = array_merge($data,$holiday);
+		$counts = count($data);
 
 		$formdata = array();
 		$num = array();
 		$jdata = array();
+
 		for($i=0;$i<5;$i++){
 			for($j=0;$j<6;$j++){
 				$formdata[$i][$j] = ' ';
@@ -141,11 +123,10 @@ class Display extends Base
 			}
 		}
 
-		for($j=0;$j<$count;$j++){
+		for($j=0;$j<$counts;$j++){
 			$row = $data[$j]['exp_sec']-1;
 			$col = $data[$j]['exp_week']-1;
 			$formdata[$row][$col] = $data[$j]['exp_name'];
-			$num[$row][$col] = $data[$j]['id'];
 			$jdata[$j] = [
 				"实验课程名称"	=>	$data[$j]['exp_name'],
 				"专业班级"		=>	$data[$j]['exp_class'],
@@ -156,12 +137,7 @@ class Display extends Base
 			];
 			$arr[$row][$col][0] = $jdata[$j];
 		}
-
-		/*$jc = array(
-			'第一大节','第二大节','第三大节','第四大节','第五大节'
-		);
-*/
-		$jsondata = [];
+		// dump($jdata);
 
 		for($js=0;$js<5;$js++){
 			$jsondata[$js] = [

@@ -12,8 +12,6 @@ class Index extends Base
      */
     public function index()
     {
-        /*$data = Db::name('lab')->select();
-        $this->assign('exp',$data);*/
         return $this->fetch('index');
     }
 
@@ -23,13 +21,9 @@ class Index extends Base
      * @Description: 跳转到课程表页面，并传输数据
      */
     public function table(){
-        /*$data = Db::name('lab')->select();
-        $this->assign('exp',$data);*/
-
         $lab_id = input('Lab_ID');
         $labinfo = Db::name('lab')->where('id',($lab_id))->find();
         $this->assign('labinfo',$labinfo);
-        // echo $getData;
         return $this->fetch('table');
     }
 
@@ -41,16 +35,16 @@ class Index extends Base
     public function form(){
         $type = Db::name('type')->select();
         $jys = Db::name('jys')->select();
+
         $this->assign('jys',$jys);
         $this->assign('type',$type);
-        // $this->assign('exp',$data);
         $lab_id = input('Lab_ID');
-        $labinfo = Db::name('lab')->where('id',($lab_id+1))->find();
-        $this->assign('labinfo',$labinfo);
+        // $labinfo = Db::name('lab')->where('id',($lab_id+1))->find();
+        $equip = Db::name('equip')->where(['elab_id'=>$lab_id,'isdelete'=>0])->select();
+        $this->assign('equip',$equip);
         // 得到点击的位置的信息
         $gets = input('get.');
         $this->assign('gets',$gets);
-        // dump($gets);
         return $this->fetch('form');
     }
 
@@ -70,13 +64,11 @@ class Index extends Base
 
         if(request() -> isPost()){
             $ex_data = input('post.');
-            // dump($ex_data);
             $old_pass = md5($ex_data['old_pass']);
             $new_pass = md5($ex_data['new_pass']);
-
             if($old_pass == $password){
                 if($new_pass == $password){
-                    echo json(['code'=>2,'msg'=>'您输入的密码与原密码相同！'])->getcontent();  
+                    echo json(['code'=>1,'msg'=>'您输入的密码与原密码相同！'])->getcontent();  
                 }else{
                     $result = Db::name($identity)
                     ->where('username',$username)
@@ -86,16 +78,19 @@ class Index extends Base
 
                     if($result){
                         session(null);
-                        echo json(['code'=>0])->getcontent();  
+                        // echo '<script>
+                        //         alert(123);
+                        //     </script>';
+                        // $this->redirect('Login/index');
+                        echo json(['code'=>0])->getcontent();
                     }else{
-                        echo json(['code'=>3])->getcontent();  
+                        echo json(['code'=>1])->getcontent();  
                     }
                 }
             }else{
                 echo json(['code'=>1,'msg'=>'原密码错误'])->getcontent();  
             }
         }
-        // dump($info);
     }
 
     /**
