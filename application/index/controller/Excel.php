@@ -93,6 +93,18 @@ class Excel extends Base
 
 	/**
 	 * @Author:      fyd
+	 * @DateTime:    2018-04-08 16:43:39
+	 * @Description: 获取最新的数据。本人提交的还未提交申请书的 前五条
+	 */
+	private function getLimitData(){
+		$user = session('ems_name'); //获取当前登录的用户
+		$res = Db::name('exper')->field('exp_xq,exp_name,exp_bz,exp_xs,exp_class,exp_snum,exp_date,exp_week,exp_sec')->where(['exp_user'=>$user,'exp_apply'=>0])->limit(5)->order('id desc')->select();
+		// dump($res);
+		return $res;
+	}
+
+	/**
+	 * @Author:      fyd
 	 * @DateTime:    2017-12-14 21:44:20
 	 * @Description: 利用PHPExcel生成实验申请表
 	 */
@@ -152,6 +164,19 @@ class Excel extends Base
        	$PHPSheet->setCellValue('B12','实验中心主任签字:');
        	$PHPSheet->setCellValue('C12','系教学主任签字:');
        	$PHPSheet->setCellValue('G12',date('Y年m月d日',time()));
+
+       	$data = $this->getLimitData();
+       	$count = count($data);
+       	for($i=0;$i<$count;$i++){
+       		$PHPSheet->setCellValue('A'.(6+$i),$data[$i]['exp_name']);
+       		$PHPSheet->setCellValue('B'.(6+$i),$data[$i]['exp_bz']);
+       		$PHPSheet->setCellValue('C'.(6+$i),$data[$i]['exp_xs']);
+       		$PHPSheet->setCellValue('D'.(6+$i),$data[$i]['exp_class']);
+       		$PHPSheet->setCellValue('E'.(6+$i),$data[$i]['exp_snum']);
+       		$PHPSheet->setCellValue('F'.(6+$i),$data[$i]['exp_date']);
+       		$PHPSheet->setCellValue('G'.(6+$i),$data[$i]['exp_week']);
+       		$PHPSheet->setCellValue('H'.(6+$i),$data[$i]['exp_sec']);
+       	}
 
         $PHPWriter = PHPExcel_IOFactory::createWriter($PHPExcel,'Excel2007');
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
