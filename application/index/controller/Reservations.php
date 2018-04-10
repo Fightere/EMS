@@ -166,6 +166,10 @@ class Reservations extends Base
 		$id = input('experid');
 		$data = array();
 		$exdata = input('post.');
+		$exper_info = Db::name('exper')->where('id',$id)->find();
+		$termweek = $exper_info['exp_date'];
+		$wday = $exper_info['exp_week'];
+		$peroid = $exper_info['exp_sec'];
 		$data = [
 			'exp_name'=>$exdata['class_name'],
 			'exp_xs'=>$exdata['classes'],
@@ -180,36 +184,15 @@ class Reservations extends Base
 			'exp_type'=>$exdata['type']
 		];
 
-		$a1=preg_match('/['.chr(0xa1).'-'.chr(0xff).']/', $exdata['class_name']);
-		$b1=preg_match('/[0-9]/', $exdata['class_name']);
-		$c1=preg_match('/[a-zA-Z]/', $exdata['class_name']);
-		$a2=preg_match('/['.chr(0xa1).'-'.chr(0xff).']/', $exdata['major_class']);
-		$b2=preg_match('/[0-9]/', $exdata['major_class']);
-		$c2=preg_match('/[a-zA-Z]/', $exdata['major_class']);
-		$a3=preg_match('/['.chr(0xa1).'-'.chr(0xff).']/', $exdata['teacher']);
-		$b3=preg_match('/[0-9]/', $exdata['teacher']);
-		$c3=preg_match('/[a-zA-Z]/', $exdata['teacher']);
-		$state = true;
-		if(!is_numeric($exdata['classes']) | !is_numeric($exdata['sum_peo']) | !is_numeric($exdata['group_peo']) | !is_numeric($exdata['cycle_peo'])){
-			// echo "这些数据必须全部是数字<br>";
-			echo json(['code'=>1,'msg'=>'学时、人数信息必须全部是数字'])->getcontent();  
-			$state = false;
-		}elseif(!($a1 && !$b1 && !$c1) || !($a3 && !$b3 && !$c3)){
-			echo json(['code'=>1,'msg'=>'课程名称、指导老师必须是中文'])->getcontent();
-			// echo "这个数据必须是中文";
-			$state = false;
-		}elseif(!($a2 && $b2 && !$c2)){
-			echo json(['code'=>1,'msg'=>'专业班级必须有中文和数字'])->getcontent();
-			// echo "这个数据必须有中文和数字";
-			$state = false;
-		}
+		$state = $this->state($exdata['class_name'],$exdata['major_class'],$exdata['teacher'],$exdata['classes'],$exdata['sum_peo'],$exdata['group_peo'],$exdata['cycle_peo'],$exdata['equip_name'],$termweek,$wday,$peroid,$exper_info['elab_id']);
+
 		if($state){
 			$res = Db::name('exper') -> where('id',$id) -> update($data);
 			if($res){
 				Db::name('exper') -> where('id',$id) -> update(['undo'=>0]);
-				echo json(['code'=>0,'data'=>$exdata])->getcontent();
+				echo json(['code'=>0,'msg'=>'修改成功'])->getcontent();
 			}else{
-				echo json(['code'=>1])->getcontent();
+				echo json(['code'=>1,'msg'=>'未修改数据'])->getcontent();
 			}
 		}
 	}
@@ -261,6 +244,62 @@ class Reservations extends Base
 
 	/**
 	 * @Author:      fyd
+	 * @DateTime:    2018-04-10 17:13:35
+	 * @Description: 判断预约条件
+	 */
+	private function state($ename,$eclass,$ezdt,$xs,$snum,$pnum,$cycle,$equipid,$termweek,$day,$peroid,$lab_id){
+		$state = true;
+		$a1=preg_match('/['.chr(0xa1).'-'.chr(0xff).']/', $ename);
+		$b1=preg_match('/[0-9]/', $ename);
+		$c1=preg_match('/[a-zA-Z]/', $ename);
+		$a2=preg_match('/['.chr(0xa1).'-'.chr(0xff).']/', $eclass);
+		$b2=preg_match('/[0-9]/', $eclass);
+		$c2=preg_match('/[a-zA-Z]/', $eclass);
+		$a3=preg_match('/['.chr(0xa1).'-'.chr(0xff).']/', $ezdt);
+		$b3=preg_match('/[0-9]/', $ezdt);
+		$c3=preg_match('/[a-zA-Z]/', $ezdt);
+		if(!is_numeric($xs) | !is_numeric($snum) | !is_numeric($pnum) | !is_numeric($cycle)){
+			// echo "这些数据必须全部是数字<br>";
+			echo json(['code'=>1,'msg'=>'学时、人数信息必须全部是数字'])->getcontent();  
+			$state = false;
+			return $state;
+		}elseif(!($a1 && !$b1 && !$c1) || !($a3 && !$b3 && !$c3)){
+			echo json(['code'=>1,'msg'=>'课程名称、指导老师必须是中文'])->getcontent();
+			$state = false;
+			return $state;
+		}elseif(!($a2 && $b2 && !$c2)){
+			echo json(['code'=>1,'msg'=>'专业班级必须有中文和数字'])->getcontent();
+			// echo "这个数据必须有中文和数字";
+			$state = false;
+			return $state;
+		}
+
+		//进行设备的处理
+		$applynum = (int)($snum/$pnum);
+		$remain = Db::name('exper')->field('sum(exp_snum/exp_pnum) as sum')->where(['equip_id'=>$equipid,'exp_apply'=>1,'exp_isallow'=>1,'exp_date'=>$termweek,'exp_week'=>$day,'exp_sec'=>$peroid,'undo'=>0])->find();
+
+		$esum = Db::name('equip')->where('id',$equipid)->find();
+		$sum = $esum['equip_num'];
+		if($remain){
+			$rdata = (int)$remain['sum'];
+			$leftnum = $sum - $rdata;
+			if($applynum > $leftnum){
+				echo json(['code'=>1,'msg'=>'预约设备过多'])->getcontent();
+				$state = false;
+				return $state;
+			}
+		}else{
+			if($applynum > $sum){
+				echo json(['code'=>1,'msg'=>'预约设备过多'])->getcontent();
+				$state = false;
+				return $state;
+			}
+		}
+		return $state;
+	}
+
+	/**
+	 * @Author:      fyd
 	 * @DateTime:    2018-02-21 15:40:40
 	 * @Description: add
 	 */
@@ -285,54 +324,12 @@ class Reservations extends Base
 		$pnum = $posts['group_peo'];
 		$cycle = $posts['cycle_peo'];
 		$class = $posts['major_class'];
-
-		$a1=preg_match('/['.chr(0xa1).'-'.chr(0xff).']/', $name);
-		$b1=preg_match('/[0-9]/', $name);
-		$c1=preg_match('/[a-zA-Z]/', $name);
-		$a2=preg_match('/['.chr(0xa1).'-'.chr(0xff).']/', $class);
-		$b2=preg_match('/[0-9]/', $class);
-		$c2=preg_match('/[a-zA-Z]/', $class);
-		$a3=preg_match('/['.chr(0xa1).'-'.chr(0xff).']/', $zdt);
-		$b3=preg_match('/[0-9]/', $zdt);
-		$c3=preg_match('/[a-zA-Z]/', $zdt);
-		$state = true;
-		if(!is_numeric($xs) | !is_numeric($snum) | !is_numeric($pnum) | !is_numeric($cycle)){
-			// echo "这些数据必须全部是数字<br>";
-			echo json(['code'=>1,'msg'=>'学时、人数信息必须全部是数字'])->getcontent();  
-			$state = false;
-		}elseif(!($a1 && !$b1 && !$c1) || !($a3 && !$b3 && !$c3)){
-			echo json(['code'=>1,'msg'=>'课程名称、指导老师必须是中文'])->getcontent();
-			// echo "这个数据必须是中文";
-			$state = false;
-		}elseif(!($a2 && $b2 && !$c2)){
-			echo json(['code'=>1,'msg'=>'专业班级必须有中文和数字'])->getcontent();
-			// echo "这个数据必须有中文和数字";
-			$state = false;
-		}
+		$day = $posts['day'];
 
 		$warr = ['mon','tues','wed','thur','fri','sat'];
-		$termweek = $posts['week'];
-		$wday = array_search($posts['day'],$warr)+1;
+		$wday = array_search($day,$warr)+1;
 
-		//进行设备的处理
-		$applynum = (int)($snum/$pnum);
-		$isapply = Db::name('exper')->where(['equip_id'=>$equipid,'exp_date'=>$termweek,'exp_week'=>$wday,'exp_sec'=>$posts['period'],'exp_apply'=>1,'exp_isallow'=>1,'undo'=>0])->find();
-		$esum = Db::name('equip')->where('id',$equipid)->find();
-		$sum = $esum['equip_num'];
-		if($isapply){
-			$ago = (int)($isapply['exp_snum']/$isapply['exp_pnum']);
-			if($applynum > ($sum-$ago)){
-				echo json(['code'=>1,'msg'=>'预约设备过多'])->getcontent();
-				// echo "预约设备过多";
-				$state = false;
-			}
-		}else{
-			if($applynum > $sum){
-				// echo "预约设备过多";
-				echo json(['code'=>1,'msg'=>'预约设备过多'])->getcontent();
-				$state = false;
-			}
-		}
+		$state = $this->state($name,$class,$zdt,$xs,$snum,$pnum,$cycle,$equipid,$posts['week'],$wday,$posts['period'],$lab_id);
 
 		if($state){
 			$termweek = $posts['week'];
@@ -360,10 +357,11 @@ class Reservations extends Base
 			);
 
 			$res = Db::name('exper')->insert($insertdata);
-			// dump($res);
-			if($res==1){
-				// echo "添加成功！";
+			if($res){
 				echo json(['code'=>0,'msg'=>'添加成功'])->getcontent();
+			}else{
+				// echo json(['code'=>1,'msg'=>'未修改信息'])->getcontent();
+				echo json(['code'=>1,'msg'=>'添加失败'])->getcontent();
 			}
 		}
 	}
