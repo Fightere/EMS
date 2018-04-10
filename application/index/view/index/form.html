@@ -16,17 +16,33 @@
     <div class="layui-body">
         <!-- 内容主体区域 -->
         <h2>请填写您的预约信息</h2>
+        {if condition="$reper neq 0"}
         <form class="layui-form layui-container" action="#" method="post">
+        {/if}
+        {if condition="$reper eq 0"}
+        <form class="layui-form layui-container" action="{:url('Reservations/rechange')}" method="post">
+        {/if}
+            {if condition="$reper neq 0"}
             <input type="hidden" name="Lab_ID" value="{$gets.Lab_ID}">
             <input type="hidden" name="day" value="{$gets.day}">
             <input type="hidden" name="period" value="{$gets.period}">
             <input type="hidden" name="week" value="{$gets.week}">
+            {/if}
+
+            {if condition="$reper eq 0"}
+            <input type="hidden" name="experid" value="{$eid}">
+            {/if}
             <div class="layui-row">
                 <div class="layui-col-lg3 layui-col-md4 layui-col-sm6">
                     <div class="layui-form-item">
                         <label class="layui-form-label">课程名称</label>
                         <div class="layui-input-block">
+                            {if condition="$reper neq 0"}
                             <input type="text" name="class_name" required  lay-verify="required" placeholder="请输入课程名称" autocomplete="off" class="layui-input">
+                            {/if}
+                            {if condition="$reper eq 0"}
+                            <input type="text" name="class_name" required  lay-verify="required" placeholder="请输入课程名称" autocomplete="off" class="layui-input" value="{$experinfo['exp_name']}">
+                            {/if}
                         </div>
                     </div>
                 </div>
@@ -34,7 +50,12 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">指导老师</label>
                         <div class="layui-input-block">
+                            {if condition="$reper neq 0"}
                             <input type="text" name="teacher" required  lay-verify="required" placeholder="请输入指导老师" autocomplete="off" class="layui-input">
+                            {/if}
+                            {if condition="$reper eq 0"}
+                            <input type="text" name="teacher" required  lay-verify="required" placeholder="请输入指导老师" autocomplete="off" class="layui-input" value="{$experinfo['exp_zdt']}">
+                            {/if}
                         </div>
                     </div>
                 </div>
@@ -44,9 +65,16 @@
                         <div class="layui-input-block">
                             <select name="office" lay-verify="required">
                                 <option value="0"></option>
+                                {if condition="$reper neq 0"}
                                 {volist name="jys" id="vo_jys"}
                                 <option value="{$vo_jys['id']}">{$vo_jys['jys_name']}</option>
                                 {/volist}
+                                {/if}
+                                {if condition="$reper eq 0"}
+                                {volist name="jys" id="vo_jys"}
+                                <option value="{$vo_jys['id']}" {if condition="$vo_jys['id'] eq $experinfo['exp_jys']" } selected="selected" {/if}>{$vo_jys['jys_name']}</option>
+                                {/volist}
+                                {/if}
                             </select>
                         </div>
                     </div>
@@ -58,9 +86,16 @@
                         <div class="layui-input-block">
                             <select name="equip_name" lay-verify="required">
                                 <option value="0"></option>
+                                {if condition="$reper neq 0"}
                                 {volist name="equip" id="vo_equip"}
-                                <option value="{$vo_equip['id']}">{$vo_equip['equip_name']}（{$vo_equip['equip_num']}）</option>
+                                <option value="{$vo_equip['id']}">{$vo_equip['equip_name']}（类型剩余：{$vo_equip['remain_num']}）</option>
                                 {/volist}
+                                {/if}
+                                {if condition="$reper eq 0"}
+                                {volist name="equip" id="vo_equip"}
+                                <option value="{$vo_equip['id']}" {if condition="$vo_equip['id'] eq $experinfo['equip_id']" } selected="selected" {/if}>{$vo_equip['equip_name']}（类型剩余：{$vo_equip['remain_num']}）</option>
+                                {/volist}
+                                {/if}
                             </select>
                         </div>
                     </div>
@@ -70,7 +105,12 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">实验学时</label>
                         <div class="layui-input-block">
+                            {if condition="$reper neq 0"}
                             <input type="text" name="classes" required  lay-verify="required" placeholder="请输入实验学时" autocomplete="off" class="layui-input">
+                            {/if}
+                            {if condition="$reper eq 0"}
+                            <input type="text" name="classes" required  lay-verify="required" placeholder="请输入实验学时" autocomplete="off" class="layui-input" value="{$experinfo['exp_xs']}">
+                            {/if}
                         </div>
                     </div>
                 </div>
@@ -78,7 +118,12 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">实验人数</label>
                         <div class="layui-input-block">
+                            {if condition="$reper neq 0"}
                             <input type="text" name="sum_peo" required  lay-verify="required" placeholder="请输入实验人数" autocomplete="off" class="layui-input">
+                            {/if}
+                            {if condition="$reper eq 0"}
+                            <input type="text" name="sum_peo" required  lay-verify="required" placeholder="请输入实验人数" autocomplete="off" class="layui-input" value="{$experinfo['exp_snum']}">
+                            {/if}
                         </div>
                     </div>
                 </div>
@@ -86,7 +131,12 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">每组人数</label>
                         <div class="layui-input-block">
+                            {if condition="$reper neq 0"}
                             <input type="text" name="group_peo" required  lay-verify="required" placeholder="请输入每组人数" autocomplete="off" class="layui-input">
+                            {/if}
+                            {if condition="$reper eq 0"}
+                            <input type="text" name="group_peo" required  lay-verify="required" placeholder="请输入每组人数" autocomplete="off" class="layui-input" value="{$experinfo['exp_pnum']}">
+                            {/if}
                         </div>
                     </div>
                 </div>
@@ -94,7 +144,12 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">循环人数</label>
                         <div class="layui-input-block">
+                            {if condition="$reper neq 0"}
                             <input type="text" name="cycle_peo" required  lay-verify="required" placeholder="请输入循环人数" autocomplete="off" class="layui-input">
+                            {/if}
+                            {if condition="$reper eq 0"}
+                            <input type="text" name="cycle_peo" required  lay-verify="required" placeholder="请输入循环人数" autocomplete="off" class="layui-input" value="{$experinfo['exp_cycle']}">
+                            {/if}
                         </div>
                     </div>
                 </div>
@@ -104,9 +159,16 @@
                         <div class="layui-input-block">
                             <select name="type" lay-verify="required">
                                 <option value="0"></option>
+                                {if condition="$reper neq 0"}
                                 {volist name="type" id="vo_type"}
                                 <option value="{$vo_type['id']}">{$vo_type['type_name']}</option>
                                 {/volist}
+                                {/if}
+                                {if condition="$reper eq 0"}
+                                {volist name="type" id="vo_type"}
+                                <option value="{$vo_type['id']}" {if condition="$vo_type['id'] eq $experinfo['exp_type']" } selected="selected" {/if}>{$vo_type['type_name']}</option>
+                                {/volist}
+                                {/if}
                             </select>
                         </div>
                     </div>
@@ -115,7 +177,12 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">专业班级</label>
                         <div class="layui-input-block">
+                            {if condition="$reper neq 0"}
                             <input type="text" name="major_class" required  lay-verify="required" placeholder="请输入专业班级" autocomplete="off" class="layui-input">
+                            {/if}
+                            {if condition="$reper eq 0"}
+                            <input type="text" name="major_class" required  lay-verify="required" placeholder="请输入专业班级" autocomplete="off" class="layui-input" value="{$experinfo['exp_class']}">
+                            {/if}
                         </div>
                     </div>
                 </div>
@@ -124,7 +191,12 @@
                 <div class="layui-form-item layui-form-text">
                     <label class="layui-form-label">备注</label>
                     <div class="layui-input-block">
+                        {if condition="$reper neq 0"}
                         <textarea name="desc" placeholder="请输入内容" class="layui-textarea"></textarea>
+                        {/if}
+                        {if condition="$reper eq 0"}
+                        <textarea name="desc" placeholder="请输入内容" class="layui-textarea">{$experinfo['exp_bz']}</textarea>
+                        {/if}
                     </div>
                 </div>
             </div>

@@ -33,18 +33,33 @@ class Index extends Base
      * @Description: 跳转到输入课程信息界面，并传输数据
      */
     public function form(){
+        $reper = 1;
+        $this->assign('reper',$reper);
         $type = Db::name('type')->select();
         $jys = Db::name('jys')->select();
 
         $this->assign('jys',$jys);
         $this->assign('type',$type);
         $lab_id = input('Lab_ID');
-        // $labinfo = Db::name('lab')->where('id',($lab_id+1))->find();
         $equip = Db::name('equip')->where(['elab_id'=>$lab_id,'isdelete'=>0])->select();
-        $this->assign('equip',$equip);
         // 得到点击的位置的信息
         $gets = input('get.');
         $this->assign('gets',$gets);
+        // dump($gets);
+        $week = $gets['week'];
+        $warr = ['mon','tues','wed','thur','fri','sat'];
+        $day = array_search($gets['day'],$warr)+1;
+        $period = $gets['period'];
+        // echo $week.'---'.$day.'---'.$period;
+        $count = count($equip);
+        for($i=0;$i<$count;$i++){
+            $remain = Db::name('exper')->field('sum(exp_snum/exp_pnum) as sum')->where(['equip_id'=>$equip[$i]['id'],'exp_apply'=>1,'exp_isallow'=>1,'exp_date'=>$week,'exp_week'=>$day,'exp_sec'=>$period,'undo'=>0])->find();
+            // dump($remain);
+            $rdata = (int)$remain['sum'];
+            $equip[$i]['remain_num'] = $equip[$i]['equip_num']-$rdata;
+        }
+        $this->assign('equip',$equip);
+        // dump($equip);
         return $this->fetch('form');
     }
 

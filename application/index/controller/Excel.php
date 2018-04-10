@@ -98,7 +98,7 @@ class Excel extends Base
 	 */
 	private function getLimitData(){
 		$user = session('ems_name'); //获取当前登录的用户
-		$res = Db::name('exper')->field('exp_xq,exp_name,exp_bz,exp_xs,exp_class,exp_snum,exp_date,exp_week,exp_sec')->where(['exp_user'=>$user,'exp_apply'=>0])->limit(5)->order('id desc')->select();
+		$res = Db::name('exper')->field('exp_xq,exp_name,exp_bz,exp_xs,exp_class,exp_snum,exp_date,exp_week,exp_sec')->where(['exp_user'=>$user,'exp_apply'=>0,'undo'=>0])->limit(5)->order('exp_time desc')->select();
 		// dump($res);
 		return $res;
 	}

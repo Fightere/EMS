@@ -16,8 +16,18 @@
     <div class="layui-body">
         <div class="layui-container">
             <!-- 内容主体区域 -->
-            <h2>我的预约</h2>
+            <h2>我的预约
+                <div class="layui-show-md-inline-block" style="float: right;">
+                    <a href="{:url('Excel/index')}" class="layui-btn" title="仅打印最新的五条预约数据">生成预约申请书</a>
+                </div>
+            </h2>
             <table id="reservation_user" lay-filter="reservation_user"></table>
+            <script type="text/html" id="operation-bar">
+                {{# var ifdisabled=(d.ifsubmit=='是'?'layui-btn-disabled':'')}}
+                <a class="layui-btn layui-btn-xs {{ifdisabled}}" lay-event="{{ifdisabled=='layui-btn-disabled'?'':'change'}}">修改</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs {{ifdisabled}}" lay-event="{{ifdisabled=='layui-btn-disabled'?'':'del'}}">撤销</a>
+            </script>
+
         </div>
     </div>
     {include file="common/footer" /}

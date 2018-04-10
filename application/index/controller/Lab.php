@@ -12,7 +12,6 @@ class Lab extends Base
 	 * @Description: 显示界面
 	 */
 	public function addinfo(){
-
 		$lid = 0;
 
 		$this->assign('lid',$lid);
