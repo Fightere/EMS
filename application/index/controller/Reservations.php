@@ -154,6 +154,7 @@ class Reservations extends Base
         $jys = Db::name('jys')->select();
         $this->assign('jys',$jys);
         $this->assign('type',$type);
+        $res = Db::name('exper')->where('id',$id)->update(['undo'=>0]);
 		return $this->fetch('index/form');
 	}
 
@@ -167,6 +168,7 @@ class Reservations extends Base
 		$data = array();
 		$exdata = input('post.');
 		$exper_info = Db::name('exper')->where('id',$id)->find();
+        $res1 = Db::name('exper')->where('id',$id)->update(['undo'=>1]);
 		$termweek = $exper_info['exp_date'];
 		$wday = $exper_info['exp_week'];
 		$peroid = $exper_info['exp_sec'];
@@ -188,8 +190,8 @@ class Reservations extends Base
 
 		if($state){
 			$res = Db::name('exper') -> where('id',$id) -> update($data);
+            Db::name('exper') -> where('id',$id) -> update(['undo'=>0]);
 			if($res){
-				Db::name('exper') -> where('id',$id) -> update(['undo'=>0]);
 				echo json(['code'=>0,'msg'=>'修改成功'])->getcontent();
 			}else{
 				echo json(['code'=>1,'msg'=>'未修改数据'])->getcontent();
@@ -263,8 +265,8 @@ class Reservations extends Base
 			echo json(['code'=>1,'msg'=>'学时、人数信息必须全部是数字'])->getcontent();  
 			$state = false;
 			return $state;
-		}elseif(!($a1 && !$b1 && !$c1) || !($a3 && !$b3 && !$c3)){
-			echo json(['code'=>1,'msg'=>'课程名称、指导老师必须是中文'])->getcontent();
+		}elseif( !($a3 && !$b3 && !$c3)){
+			echo json(['code'=>1,'msg'=>'指导老师必须是中文'])->getcontent();
 			$state = false;
 			return $state;
 		}elseif(!($a2 && $b2 && !$c2)){

@@ -14,7 +14,7 @@
 // 定义应用目录
 define('APP_PATH', __DIR__ . '/../application/');
 //定义站点的根路径
-define('SITE_URL','http://127.0.0.1:8080/Experimental_management_system');
+define('SITE_URL','http://127.0.0.1/Experimental_management_system');
 
 // 加载框架引导文件
 require __DIR__ . '/../thinkphp/start.php';
