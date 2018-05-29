@@ -21,6 +21,9 @@ class Login extends Model
         if($user){
             //补充：密码的加密
             if($user['password'] == md5($data['password'])){
+                if(is_null(session('ems_id'))){
+                    echo '<script>alert("注意：您已经登录了其他用户！")</script>';
+                }
                 session(null);
                 session('ems_id',$user['id']);
                 session('ems_name',$user['name']);

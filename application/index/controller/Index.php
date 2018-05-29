@@ -30,7 +30,7 @@ class Index extends Base
     /**
      * @Author:      fyd
      * @DateTime:    2018-02-20 11:59:40
-     * @Description: 跳转到输入课程信息界面，并传输数据
+     * @Description: 跳转到输入课程信息界面，并传输数据WW
      */
     public function form(){
         $reper = 1;

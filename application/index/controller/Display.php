@@ -20,7 +20,7 @@ class Display extends Base
 		$fmonth = $farr[1];
 		//学期
 		if($fmonth > '09'){
-			$xq = $fyear.' - '.($fear+1).' -  2';
+			$xq = $fyear.' - '.($fyear+1).' -  2';
 		}else{
 			$xq = ($fyear-1).' - '.$fyear.' -  1';
 		}
@@ -70,35 +70,43 @@ class Display extends Base
 
 		if(isset($dweek)){
 			$data = Db::name('exper')
-					->field('sum(exp_snum/exp_pnum),sum(exp_snum),exp_snum,exp_name,exp_class,exp_zdt,exp_sec,exp_week')
+					->field('sum(exp_snum/exp_pnum),sum(exp_snum),exp_snum,exp_name,exp_class,exp_zdt,exp_sec,exp_week,exp_apply,exp_isallow')
 					->where('exp_date',$dweek)
 					->where('elab_id',$lab_id)
 					->where('undo',0)
 					// ->where('equip_id','in',$labid)
-					->where(['exp_apply'=>1,'exp_isallow'=>1])
+//					->where(['exp_apply'=>1,'exp_isallow'=>1])
 					->group('exp_date,exp_week,exp_sec')
 					->select();
 		}else{
 			$data = Db::name('exper')
-					->field('sum(exp_snum/exp_pnum),sum(exp_snum),exp_snum,exp_name,exp_class,exp_zdt,exp_sec,exp_week')
+					->field('sum(exp_snum/exp_pnum),sum(exp_snum),exp_snum,exp_name,exp_class,exp_zdt,exp_sec,exp_week,exp_apply,exp_isallow')
 					->where('exp_date',18)
 					->where('elab_id',$lab_id)
 					->where('undo',0)
 					// ->where('equip_id','in',$labid)
-					->where(['exp_apply'=>1,'exp_isallow'=>1])
+//					->where(['exp_apply'=>1,'exp_isallow'=>1])
 					->group('exp_date,exp_week,exp_sec')
 					->select();
 		}
-		// dump($data2);
+
 		$count = count($data);
 		$arr = [];
 		for($js=0;$js<5;$js++){
 			$arr[$js] = [ [[]], [[]], [[]], [[]], [[]], [[]]
 			];
 		}
+//        dump($data);
 		// 对于$data的处理 获取到对应实验的实验设备数目 并且进行对比 然后把数据添加过去
 		for($n=0;$n<$count;$n++){
 			$oper_data = $data[$n];
+			$apply = $data[$n]['exp_apply'];
+			$isallow = $data[$n]['exp_isallow'];
+			if($apply==0 | $isallow==0){
+                $data[$n]['isAllow'] = 0;
+            }else{
+                $data[$n]['isAllow'] = 1;
+            }
 			// $equipid = $oper_data['equip_id'];
 			// $edata = Db::name('equip')->where('id',$equipid)->find();
 			$edata = Db::name('lab')->where('id',$lab_id)->find();
@@ -109,8 +117,14 @@ class Display extends Base
 			$data[$n]['equip_num'] = $equipnum;
 			$data[$n]['remain_num'] = $remain;
 		}
+//		dump($data);
+
 
 		$holiday = Db::name('holiday')->where('exp_date',$dweek)->select();
+		$hcou = count($holiday);
+        for($cc=0;$cc<$hcou;$cc++){
+            $holiday[$cc]['isAllow']=1;
+        }
 		$data = array_merge($data,$holiday);
 		$counts = count($data);
 
@@ -124,22 +138,23 @@ class Display extends Base
 				$num[$i][$j] = 0;
 			}
 		}
+//        dump($data);
 
 		for($j=0;$j<$counts;$j++){
 			$row = $data[$j]['exp_sec']-1;
 			$col = $data[$j]['exp_week']-1;
 			$formdata[$row][$col] = $data[$j]['exp_name'];
 			$jdata[$j] = [
-				"实验课程名称"	=>	$data[$j]['exp_name'],
+				"实验课程名称"	    =>	$data[$j]['exp_name'],
 				"专业班级"		=>	$data[$j]['exp_class'],
 				"人数"			=>	$data[$j]['exp_snum'],
 				"指导教师"		=>	$data[$j]['exp_zdt'],
-				"可用设备数"	=>	$data[$j]['remain_num'],
-				"总实验设备数"	=>	$data[$j]['equip_num'],
+				"可用设备数"	    =>	$data[$j]['remain_num'],
+				"总实验设备数"	    =>	$data[$j]['equip_num'],
+                "isAllow"       =>  $data[$j]['isAllow'],
 			];
 			$arr[$row][$col][0] = $jdata[$j];
 		}
-		// dump($jdata);
 
 		for($js=0;$js<5;$js++){
 			$jsondata[$js] = [

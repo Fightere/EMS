@@ -174,7 +174,7 @@ class Reservations extends Base
 		$peroid = $exper_info['exp_sec'];
 		$data = [
 			'exp_name'=>$exdata['class_name'],
-			'exp_xs'=>$exdata['classes'],
+//			'exp_xs'=>$exdata['classes'],
 			'exp_cycle'=>$exdata['cycle_peo'],
 			'exp_bz'=>$exdata['desc'],
 			'equip_id'=>$exdata['equip_name'],
@@ -186,7 +186,7 @@ class Reservations extends Base
 			'exp_type'=>$exdata['type']
 		];
 
-		$state = $this->state($exdata['class_name'],$exdata['major_class'],$exdata['teacher'],$exdata['classes'],$exdata['sum_peo'],$exdata['group_peo'],$exdata['cycle_peo'],$exdata['equip_name'],$termweek,$wday,$peroid,$exper_info['elab_id']);
+		$state = $this->state($exdata['class_name'],$exdata['major_class'],$exdata['teacher'],0,$exdata['sum_peo'],$exdata['group_peo'],$exdata['cycle_peo'],$exdata['equip_name'],$termweek,$wday,$peroid);
 
 		if($state){
 			$res = Db::name('exper') -> where('id',$id) -> update($data);
@@ -249,7 +249,7 @@ class Reservations extends Base
 	 * @DateTime:    2018-04-10 17:13:35
 	 * @Description: 判断预约条件
 	 */
-	private function state($ename,$eclass,$ezdt,$xs,$snum,$pnum,$cycle,$equipid,$termweek,$day,$peroid,$lab_id){
+	private function state($ename,$eclass,$ezdt,$xs,$snum,$pnum,$cycle,$equipid,$termweek,$day,$peroid){
 		$state = true;
 		$a1=preg_match('/['.chr(0xa1).'-'.chr(0xff).']/', $ename);
 		$b1=preg_match('/[0-9]/', $ename);
@@ -262,7 +262,7 @@ class Reservations extends Base
 		$c3=preg_match('/[a-zA-Z]/', $ezdt);
 		if(!is_numeric($xs) | !is_numeric($snum) | !is_numeric($pnum) | !is_numeric($cycle)){
 			// echo "这些数据必须全部是数字<br>";
-			echo json(['code'=>1,'msg'=>'学时、人数信息必须全部是数字'])->getcontent();  
+			echo json(['code'=>1,'msg'=>'人数信息必须全部是数字'])->getcontent();
 			$state = false;
 			return $state;
 		}elseif( !($a3 && !$b3 && !$c3)){
@@ -321,7 +321,7 @@ class Reservations extends Base
 		$exp_xq = $xq['setvalue'];
 
 		$name = $posts['class_name']; //课程名称
-		$xs = $posts['classes']; //学时
+//		$xs = $posts['classes']; //学时
 		$snum = $posts['sum_peo'];
 		$pnum = $posts['group_peo'];
 		$cycle = $posts['cycle_peo'];
@@ -330,8 +330,7 @@ class Reservations extends Base
 
 		$warr = ['mon','tues','wed','thur','fri','sat'];
 		$wday = array_search($day,$warr)+1;
-
-		$state = $this->state($name,$class,$zdt,$xs,$snum,$pnum,$cycle,$equipid,$posts['week'],$wday,$posts['period'],$lab_id);
+		$state = $this->state($name,$class,$zdt,0,$snum,$pnum,$cycle,$equipid,$posts['week'],$wday,$posts['period']);
 
 		if($state){
 			$termweek = $posts['week'];
@@ -342,7 +341,7 @@ class Reservations extends Base
 				'exp_id'	=>	$exp_id,
 				'exp_jys'	=>	$posts['office'],
 				'exp_zdt'	=>	$zdt,
-				'exp_xs'	=>	$xs,
+//				'exp_xs'	=>	$xs,
 				'elab_id'	=>	$lab_id,
 				'equip_id'	=>	$equipid,
 				'exp_snum'	=>	$snum,
